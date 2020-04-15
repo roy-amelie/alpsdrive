@@ -1,0 +1,16 @@
+{
+  "name": "aplsdrive",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon main.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "epress": "0.0.1-security",
+    "nodemon": "^2.0.3"
+  }
+}
