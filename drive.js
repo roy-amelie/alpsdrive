@@ -1,40 +1,37 @@
 const fs = require('fs');
-const os = require('os');
-const tmp = os.tmpdir();
+const path = require('path');
 
-function sizeFile(item) {
-    const path = '/tmp/alpsdrive/' + item.name;
-    const file = fs.statSync(path);
-    return file.size;
+
+async function readAlpsDir(name) {
+    const stats = await fs.promises.stat('/tmp/alpsdrive/' + name)
+    if (stats.isDirectory()) {
+        return readFolder(name)
+    } else {
+        return readFile(name)
+    }
 }
 
-function folderList() {
-    const read = fs.promises.readdir('/tmp/alpsdrive/', {withFileTypes: true});
-    const json_result = read.then(data => {
-        let json = [];
-        for (const item of data) {
-            if (item.isDirectory()) {
-                json.push({
-                    name: item.name,
-                    isFolder: true
-                })
-            } else {
-                const size = sizeFile(item)
-
-                const objet = {
-                    name: item.name,
-                    size: size,
-                    isFolder: false
-                };
-                json.push(objet)
-            }
-        }
-        console.log(json)
-        return json
-    })
-    console.log(json_result)
-    return json_result
+async function readFolder(name) {
+    const files = await fs.promises.readdir('/tmp/alpsdrive/' + name, {withFileTypes: true});
+    return files.map(file => ({name: file.name, isFolder: file.isDirectory()}));
 }
 
-module.exports = {folderList}
+async function readFile(name) {
+    return file = await fs.promises.readFile('/tmp/alpsdrive/' + name)
+}
+
+async function deleteAlpsDir(name) {
+    const typeFile = path.extname(name)
+    if (typeFile.includes('.')) {
+        fs.unlink('/tmp/alpsdrive/' + name, (err) => {
+            if (err) throw err;
+        })
+    } else {
+        fs.rmdir('/tmp/alpsdrive/' + name, (err) => {
+            if (err) throw err;
+        })
+    }
+}
+
+module.exports = {readAlpsDir, deleteAlpsDir};
 
