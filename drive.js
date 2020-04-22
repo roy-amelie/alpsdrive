@@ -14,10 +14,29 @@ async function readAlpsDir(name) {
 //lire un dossier
 async function readFolder(name) {
     const files = await fs.promises.readdir('/tmp/alpsdrive/' + name, {withFileTypes: true});
-    return files.map(file => ({
-        name: file.name,
-        isFolder: file.isDirectory(),
-    }));
+    return Promise.all(files.map(file => mapFile(name , file)));
+}
+
+async function mapFile(name, file) {
+    if (file.isDirectory()) {
+        return {
+            name: file.name,
+            isFolder: true
+        }
+    } else {
+        console.log(file)
+        return {
+            name: file.name,
+            size: await fileSize(name, file),
+            isFolder: false
+        }
+    }
+}
+
+
+async function fileSize(name, file) {
+    const stats = await fs.promises.stat(path.join('/tmp/alpsdrive/' , name , file.name))
+    return stats.size
 }
 
 //lire un fichier
@@ -75,7 +94,12 @@ async function createAlpsDir(folder, name) {
     }
 }
 
+//upload un fichier
+async function uploadFile() {
+    console.log('bonjour')
+}
+
 
 // exports
-module.exports = {readAlpsDir, deleteAlpsDir, createAlpsDir};
+module.exports = {readAlpsDir, deleteAlpsDir, createAlpsDir, uploadFile};
 
