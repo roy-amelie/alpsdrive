@@ -14,7 +14,7 @@ async function readAlpsDir(name) {
 //lire un dossier
 async function readFolder(name) {
     const files = await fs.promises.readdir('/tmp/alpsdrive/' + name, {withFileTypes: true});
-    return Promise.all(files.map(file => mapFile(name , file)));
+    return Promise.all(files.map(file => mapFile(name, file)));
 }
 
 async function mapFile(name, file) {
@@ -24,7 +24,6 @@ async function mapFile(name, file) {
             isFolder: true
         }
     } else {
-        console.log(file)
         return {
             name: file.name,
             size: await fileSize(name, file),
@@ -33,9 +32,8 @@ async function mapFile(name, file) {
     }
 }
 
-
 async function fileSize(name, file) {
-    const stats = await fs.promises.stat(path.join('/tmp/alpsdrive/' , name , file.name))
+    const stats = await fs.promises.stat(path.join('/tmp/alpsdrive/', name, file.name))
     return stats.size
 }
 
@@ -49,30 +47,15 @@ async function deleteAlpsDir(folder, name) {
     const stats = await fs.promises.stat('/tmp/alpsdrive/' + name)
     //supprimmer un dossier
     if (stats.isDirectory()) {
-        //dans un dossier secondaire
-        if (folder !== '') {
-            fs.rmdir('/tmp/alpsdrive/' + folder + '/' + name, {recursive: true}, (err) => {
-                if (err) throw err;
-            })
-            // a la racine du drive
-        } else {
-            fs.rmdir('/tmp/alpsdrive/' + name, {recursive: true}, (err) => {
-                if (err) throw err;
-            })
-        }
+        fs.rmdir(path.join('/tmp/alpsdrive/', folder, name), {recursive: true}, (err) => {
+            if (err) throw err;
+        })
     } else {
         // supprimer un fichier
-        //dans un dossier secondaire
-        if (folder !== '') {
-            fs.unlink('/tmp/alpsdrive/' + folder + '/' + name, (err) => {
-                if (err) throw err;
-            })
-            //a la racine du drive
-        } else {
-            fs.unlink('/tmp/alpsdrive/' + name, (err) => {
-                if (err) throw err;
-            })
-        }
+
+        fs.unlink(path.join('/tmp/alpsdrive/', folder, name), (err) => {
+            if (err) throw err;
+        })
     }
 }
 
@@ -80,17 +63,9 @@ async function deleteAlpsDir(folder, name) {
 async function createAlpsDir(folder, name) {
     const stats = await fs.promises.stat('/tmp/alpsdrive/' + folder)
     if (stats.isDirectory()) {
-        // dans un sossier secondaire
-        if (folder !== '') {
-            fs.mkdir('/tmp/alpsdrive/' + folder + '/' + name, (err) => {
-                if (err) throw err;
-            })
-            // a la racine du drive
-        } else {
-            fs.mkdir('/tmp/alpsdrive/' + name, (err) => {
-                if (err) throw err;
-            })
-        }
+        fs.mkdir(path.join('/tmp/alpsdrive/', folder, name), (err) => {
+            if (err) throw err;
+        })
     }
 }
 

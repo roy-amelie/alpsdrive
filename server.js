@@ -106,7 +106,7 @@ app.delete('/api/drive/:folder/:name', async (req, res) => {
 //a la racine du drive
 app.put('/api/drive', async (req, res) => {
     const file = req.files
-    console.log(file)
+
     try{
         const upload = await drive.uploadFile();
         res.send(upload)
