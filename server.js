@@ -3,12 +3,15 @@ const path = require('path');
 const drive = require('./drive');
 const app = express();
 
+//fichiers statiques
 app.use(express.static('./frontend/JS_alps-drive-project-frontend/'))
 
 app.get('/', (req, res) => {
     res.render('./frontend/JS_alps-drive-project-frontend/index.html')
 })
 
+//voir les dossiers et fichiers
+//a la racine du drive
 app.get('/api/drive', async (req, res) => {
     try {
         const files = await drive.readAlpsDir('');
@@ -18,7 +21,8 @@ app.get('/api/drive', async (req, res) => {
     }
 });
 
-app.get('/api/drive/:name',async (req,res)=>{
+//dans un second dossier
+app.get('/api/drive/:name', async (req, res) => {
     const name = req.params.name
     try {
         const files = await drive.readAlpsDir(name);
@@ -28,18 +32,90 @@ app.get('/api/drive/:name',async (req,res)=>{
     }
 });
 
-app.delete('/api/drive/:name', async (req, res)=>{
+//creer un nouveau dossier
+//a la racine du drive
+app.post('/api/drive/', async (req, res) => {
+        const name = req.query.name
+        const regex = new RegExp('^[\\d\\w\\s]+$')
+        if (regex.test(name)) {
+            try {
+                const create = await drive.createAlpsDir('', name);
+                res.send(create)
+            } catch (e) {
+                res.send(e)
+            }
+        } else {
+            res.status(400).send({error: 'pas bon'})
+        }
+    }
+)
+
+//dans un autre dossier
+app.post('/api/drive/:folder', async (req, res) => {
+        const folder = req.params.folder;
+        const name = req.query.name;
+        const regex = new RegExp('^[\\d\\w\\s]+$')
+        if (regex.test(name)) {
+            try {
+                const create = await drive.createAlpsDir(folder, name);
+                res.send(create)
+            } catch (e) {
+                res.send(e)
+            }
+        } else {
+            res.status(400).send({error: 'pas bon'})
+        }
+    }
+)
+
+//supprimer un fichier ou dossier
+//a la racine du drive
+app.delete('/api/drive/:name', async (req, res) => {
     const name = req.params.name
-    try {
-        const del = await drive.deleteAlpsDir(name);
-        res.send(del)
-    } catch (e) {
-        res.send(e)
+    const regex = new RegExp('^[\\d\\w\\s]+$')
+    if (regex.test(name)) {
+        try {
+            const del = await drive.deleteAlpsDir('', name);
+            res.send(del)
+        } catch (e) {
+            res.send(e)
+        }
+    } else {
+        res.status(400).send({error: 'pas bon'})
     }
 });
 
+//dans un autre dossier
+app.delete('/api/drive/:folder/:name', async (req, res) => {
+    const name = req.params.name
+    const folder = req.params.folder
+    const regex = new RegExp('^[\\d\\w\\s]+$')
+    if (regex.test(name)) {
+        try {
+            const del = await drive.deleteAlpsDir(folder, name);
+            res.send(del)
+        } catch (e) {
+            res.send(e)
+        }
+    } else {
+        res.status(400).send({error: 'pas bon'})
+    }
+})
+
+//upload un nouveau fichier
+//a la racine du drive
+app.put('/api/drive', async (req, res) => {
+    try{
+        
+    } catch (e) {
+        
+    }
+})
+
+//lancer le serveur
 function start() {
-    app.listen(8000)
+    app.listen(3000)
 }
 
+//export
 module.exports = {start}
