@@ -2,12 +2,19 @@ const express = require('express');
 const path = require('path');
 const drive = require('./drive');
 const app = express();
+const bb = require('express-busboy');
+const os = require('os')
 
 //fichiers statiques
 app.use(express.static('./frontend/JS_alps-drive-project-frontend/'))
 
 app.get('/', (req, res) => {
     res.render('./frontend/JS_alps-drive-project-frontend/index.html')
+})
+
+bb.extend(app, {
+    upload: true,
+    path: os.tmpdir(),
 })
 
 //voir les dossiers et fichiers
@@ -104,15 +111,29 @@ app.delete('/api/drive/:folder/:name', async (req, res) => {
 
 //upload un nouveau fichier
 //a la racine du drive
-app.put('/api/drive', async (req, res) => {
-    const file = req.files
-
-    try{
-        const upload = await drive.uploadFile();
+app.put('/api/drive/', async (req, res) => {
+    const folder = req.params;
+    const file = req.files.file;
+    console.log(file + folder)
+    try {
+        const upload = await drive.uploadFile('', file);
         res.send(upload)
     } catch (e) {
-        
+        res.send(e)
     }
+})
+
+app.put('api/drive/:name', async (req, res) => {
+    const folder = req.params
+    console.log(folder)
+    // const file = req.files.file;
+    // try {
+    //     const upload = await drive.uploadFile(folder, file);
+    //     res.send(upload)
+    // } catch (e) {
+    //     console.log(e)
+    //     res.send(e)
+    // }
 })
 
 //lancer le serveur

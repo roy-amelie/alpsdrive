@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "epress": "0.0.1-security",
     "express": "^4.17.1",
+    "express-busboy": "^8.0.0",
     "nodemon": "^2.0.3"
   }
 }

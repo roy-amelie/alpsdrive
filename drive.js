@@ -1,5 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const bb = require('express-busboy');
+const os = require('os')
 
 // lire ce qu'il y a dasn le drive
 async function readAlpsDir(name) {
@@ -17,6 +19,7 @@ async function readFolder(name) {
     return Promise.all(files.map(file => mapFile(name, file)));
 }
 
+//creation json
 async function mapFile(name, file) {
     if (file.isDirectory()) {
         return {
@@ -32,6 +35,7 @@ async function mapFile(name, file) {
     }
 }
 
+//recherche file size
 async function fileSize(name, file) {
     const stats = await fs.promises.stat(path.join('/tmp/alpsdrive/', name, file.name))
     return stats.size
@@ -44,7 +48,7 @@ async function readFile(name) {
 
 //supprimer un fichier ou un dossier
 async function deleteAlpsDir(folder, name) {
-    const stats = await fs.promises.stat('/tmp/alpsdrive/' + name)
+    const stats = await fs.promises.stat('/tmp/alpsdrive/' + folder)
     //supprimmer un dossier
     if (stats.isDirectory()) {
         fs.rmdir(path.join('/tmp/alpsdrive/', folder, name), {recursive: true}, (err) => {
@@ -52,7 +56,6 @@ async function deleteAlpsDir(folder, name) {
         })
     } else {
         // supprimer un fichier
-
         fs.unlink(path.join('/tmp/alpsdrive/', folder, name), (err) => {
             if (err) throw err;
         })
@@ -70,10 +73,14 @@ async function createAlpsDir(folder, name) {
 }
 
 //upload un fichier
-async function uploadFile() {
-    console.log('bonjour')
+async function uploadFile(folder, fileInfo) {
+    const stats = await fs.promises.stat(path.join('/tmp/alpsdrive/' + folder))
+    if (stats.isDirectory()) {
+        fs.rename(fileInfo.file, path.join('/tmp/alpsdrive/', folder, fileInfo.filename), (err) => {
+            if (err) throw err;
+        })
+    }
 }
-
 
 // exports
 module.exports = {readAlpsDir, deleteAlpsDir, createAlpsDir, uploadFile};
