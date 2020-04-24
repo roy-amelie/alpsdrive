@@ -39,41 +39,58 @@ app.get('/api/drive/:name', async (req, res) => {
     }
 });
 
-//creer un nouveau dossier
-//a la racine du drive
-app.post('/api/drive/', async (req, res) => {
-        const name = req.query.name
-        const regex = new RegExp('^[\\d\\w\\s]+$')
-        if (regex.test(name)) {
-            try {
-                const create = await drive.createAlpsDir('', name);
-                res.send(create)
-            } catch (e) {
-                res.send(e)
-            }
-        } else {
-            res.status(400).send({error: 'pas bon'})
-        }
-    }
-)
+// //creer un nouveau dossier
+// // //a la racine du drive assync await
+// // app.post('/api/drive/', async (req, res) => {
+// //         const name = req.query.name
+// //         const regex = new RegExp('^[\\d\\w\\s]+$')
+// //         if (regex.test(name)) {
+// //             try {
+// //                 const create = await drive.createAlpsDir('', name);
+// //                 res.send(create)
+// //             } catch (e) {
+// //                 res.send(e)
+// //             }
+// //         } else {
+// //             res.status(400).send({error: 'pas bon'})
+// //         }
+// //     }
+// // )
+// //
+// // //dans un autre dossier async await
+// // app.post('/api/drive/:folder', async (req, res) => {
+// //         const folder = req.params.folder;
+// //         const name = req.query.name;
+// //         const regex = new RegExp('^[\\d\\w\\s]+$')
+// //         if (regex.test(name)) {
+// //             try {
+// //                 const create = await drive.createAlpsDir(folder, name);
+// //                 res.send(create)
+// //             } catch (e) {
+// //                 res.send(e)
+// //             }
+// //         } else {
+// //             res.status(400).send({error: 'pas bon'})
+// //         }
+// //     }
+// // )
+
+//a la racine du drive promise
+app.post('/api/drive', (req, res) => {
+    const name = req.query.name
+    drive.createAlpsDir('',name)
+        .then(create => res.send(create))
+        .catch(err => res.send(err))
+})
 
 //dans un autre dossier
-app.post('/api/drive/:folder', async (req, res) => {
-        const folder = req.params.folder;
-        const name = req.query.name;
-        const regex = new RegExp('^[\\d\\w\\s]+$')
-        if (regex.test(name)) {
-            try {
-                const create = await drive.createAlpsDir(folder, name);
-                res.send(create)
-            } catch (e) {
-                res.send(e)
-            }
-        } else {
-            res.status(400).send({error: 'pas bon'})
-        }
-    }
-)
+app.post('/api/drive/:folder', (req, res) =>{
+    const name = req.query.name
+    const folder = req.params.folder
+    drive.createAlpsDir(folder,name)
+        .then(create => res.send(create))
+        .catch(err => res.send(err))
+})
 
 //supprimer un fichier ou dossier
 //a la racine du drive
