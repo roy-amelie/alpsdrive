@@ -75,22 +75,32 @@ app.get('/api/drive/:name', async (req, res) => {
 // //     }
 // // )
 
-//a la racine du drive promise
-app.post('/api/drive', (req, res) => {
-    const name = req.query.name
-    drive.createAlpsDir('',name)
-        .then(create => res.send(create))
-        .catch(err => res.send(err))
+// //a la racine du drive promise
+// app.post('/api/drive', (req, res) => {
+//     const name = req.query.name
+//     drive.createAlpsDir('',name)
+//         .then(create => res.send(create))
+//         .catch(err => res.send(err))
+// })
+//
+// //dans un autre dossier
+// app.post('/api/drive/:folder', (req, res) =>{
+//     const name = req.query.name
+//     const folder = req.params.folder
+//     drive.createAlpsDir(folder,name)
+//         .then(create => res.send(create))
+//         .catch(err => res.send(err))
+// })
+
+// a la racine du drive callback
+app.post('/api/drive/:folder',(req, res)=>{
+    const folder= req.params.folder
+    const name= req.query.name
+    drive.createAlpsDir(folder, name, file => {
+        res.send(file)
+    })
 })
 
-//dans un autre dossier
-app.post('/api/drive/:folder', (req, res) =>{
-    const name = req.query.name
-    const folder = req.params.folder
-    drive.createAlpsDir(folder,name)
-        .then(create => res.send(create))
-        .catch(err => res.send(err))
-})
 
 //supprimer un fichier ou dossier
 //a la racine du drive
@@ -131,7 +141,6 @@ app.delete('/api/drive/:folder/:name', async (req, res) => {
 app.put('/api/drive/', async (req, res) => {
     const folder = req.params;
     const file = req.files.file;
-    console.log(file + folder)
     try {
         const upload = await drive.uploadFile('', file);
         res.send(upload)
@@ -140,17 +149,16 @@ app.put('/api/drive/', async (req, res) => {
     }
 })
 
-app.put('api/drive/:name', async (req, res) => {
-    const folder = req.params
-    console.log(folder)
-    // const file = req.files.file;
-    // try {
-    //     const upload = await drive.uploadFile(folder, file);
-    //     res.send(upload)
-    // } catch (e) {
-    //     console.log(e)
-    //     res.send(e)
-    // }
+app.put('/api/drive/:folder', async (req, res) => {
+    const folder = req.params.folder
+    const file = req.files.file;
+    try {
+        const upload = await drive.uploadFile(folder, file);
+        res.send(upload)
+    } catch (e) {
+        console.log(e)
+        res.send(e)
+    }
 })
 
 //lancer le serveur
