@@ -63,20 +63,20 @@ async function deleteAlpsDir(folder, name) {
 }
 
 //creer un noouveau dossier async/await
-// async function createAlpsDir(folder, name) {
-//     const stats = await fs.promises.stat('/tmp/alpsdrive/' + folder)
-//     if (stats.isDirectory()) {
-//         fs.mkdir(path.join('/tmp/alpsdrive/', folder, name), (err) => {
-//             if (err) throw err;
-//         })
-//     }
-// }
-
-//creer un nouveau dossier promise
-function createAlpsDir(folder, name, callback) {
-    fs.promises.mkdir(path.join('/tmp/alpsdrive/', folder, name))
-        .then(callback)
+async function createAlpsDir(folder, name) {
+    const stats = await fs.promises.stat('/tmp/alpsdrive/' + folder)
+    if (stats.isDirectory()) {
+        fs.mkdir(path.join('/tmp/alpsdrive/', folder, name), (err) => {
+            if (err) throw err;
+        })
+    }
 }
+
+// //creer un nouveau dossier promise
+// function createAlpsDir(folder, name, callback) {
+//     fs.promises.mkdir(path.join('/tmp/alpsdrive/', folder, name))
+//         .then(callback)
+// }
 
 //upload un fichier
 async function uploadFile(folder, fileInfo) {
